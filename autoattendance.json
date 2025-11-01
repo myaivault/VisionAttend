@@ -1,0 +1,174 @@
+{
+  "name": "autoattendance",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1XP2b96Uinyq7l8mMjVRqpPWIK4affTsp",
+          "mode": "list",
+          "cachedResultName": "class_photos",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1XP2b96Uinyq7l8mMjVRqpPWIK4affTsp"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -784,
+        -80
+      ],
+      "id": "3cc7e276-0bf0-41c9-a032-f5e2a4f46cd1",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "ZVMG9XRMOlu15sMh",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$json[\"api_url\"]}}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "photo_name",
+              "value": "={{$json[\"photo_name\"]}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -112,
+        -80
+      ],
+      "id": "f2da80b6-bfed-4118-a72f-893d7588b617",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1fH1Rm9WhxnalcdOs4ZyfMnoL_H7yFRxCRrgEmqvFy7Q",
+          "mode": "list",
+          "cachedResultName": "AutoAttendanceDB",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fH1Rm9WhxnalcdOs4ZyfMnoL_H7yFRxCRrgEmqvFy7Q/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 191093757,
+          "mode": "list",
+          "cachedResultName": "Config",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fH1Rm9WhxnalcdOs4ZyfMnoL_H7yFRxCRrgEmqvFy7Q/edit#gid=191093757"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -560,
+        -80
+      ],
+      "id": "77b916d3-9953-4315-9d8f-0e6daa681447",
+      "name": "Get row(s) in sheet",
+      "alwaysOutputData": false,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fPH9JuSCo2o4NePh",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c3a2b09e-4584-4c6a-beba-4279b39ff9ce",
+              "name": "api_url",
+              "value": "={{$json[\"Value\"].trim()}}",
+              "type": "string"
+            },
+            {
+              "id": "3775e5b8-0b20-44fa-9553-745d8eaac639",
+              "name": "photo_name",
+              "value": "={{ $('Google Drive Trigger').item.json.originalFilename }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -352,
+        -80
+      ],
+      "id": "32b745fd-28ec-4819-b52f-9f0ac1944e3e",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "94ea1d2f-92ad-43c9-91ee-cd5d3666e87d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7b17b9e947da6da6e50d13df627cf45fa4c5197b9d3bfefa1448fb2dff474e18"
+  },
+  "id": "EoShBO8mrRdJKVl7",
+  "tags": []
+}
